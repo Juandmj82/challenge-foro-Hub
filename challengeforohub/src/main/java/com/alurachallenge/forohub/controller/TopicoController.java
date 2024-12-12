@@ -2,16 +2,24 @@ package com.alurachallenge.forohub.controller;
 
 import com.alurachallenge.forohub.dto.TopicoResponseDTO;
 import com.alurachallenge.forohub.dto.TopicoUpdateDTO;
+import com.alurachallenge.forohub.dto.TopicoRequestDTO;
 import com.alurachallenge.forohub.model.Topico;
+import com.alurachallenge.forohub.model.Curso;
+import com.alurachallenge.forohub.model.Usuario;
 import com.alurachallenge.forohub.repository.TopicoRepository;
+import com.alurachallenge.forohub.repository.CursoRepository;
+import com.alurachallenge.forohub.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Sort;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/topicos")
@@ -19,6 +27,12 @@ public class TopicoController {
 
     @Autowired
     private TopicoRepository topicoRepository;
+
+    @Autowired
+    private CursoRepository cursoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping
     public ResponseEntity<Page<TopicoResponseDTO>> listarTopicos(
@@ -68,5 +82,32 @@ public class TopicoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<TopicoResponseDTO> crearTopico(
+        @RequestBody @Valid TopicoRequestDTO datosTopico
+    ) {
+        // Buscar el curso por nombre
+        Curso curso = cursoRepository.findByNombre(datosTopico.curso())
+            .orElseThrow(() -> new IllegalArgumentException("Curso no encontrado"));
+        
+        // Buscar el autor por nombre
+        Usuario autor = usuarioRepository.findByNombre(datosTopico.autor())
+            .orElseThrow(() -> new IllegalArgumentException("Autor no encontrado"));
+        
+        // Crear nuevo tópico
+        Topico nuevoTopico = new Topico(
+            datosTopico.titulo(), 
+            datosTopico.mensaje(), 
+            LocalDateTime.now(), 
+            Topico.Status.NO_RESPONDIDO, 
+            autor, 
+            curso
+        );
+        
+        // Guardar y devolver
+        Topico topicoGuardado = topicoRepository.save(nuevoTopico);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TopicoResponseDTO(topicoGuardado));
     }
 }
