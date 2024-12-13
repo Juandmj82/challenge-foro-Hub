@@ -18,6 +18,19 @@ public interface TopicoRepository extends JpaRepository<Topico, Long> {
         Pageable pageable
     );
 
+    // Método para buscar tópicos por nombre de curso
+    @Query("SELECT t FROM Topico t WHERE t.curso.nombre = :cursoNombre")
+    Page<Topico> findByCurso(
+        @Param("cursoNombre") String cursoNombre, 
+        Pageable pageable
+    );
+
     // Método para buscar tópico por título y mensaje
     Optional<Topico> findByTituloAndMensaje(String titulo, String mensaje);
+
+    // Método para contar tópicos por ID de autor
+    long countByAutor_Id(Long autorId);
+
+    // Método para eliminar tópicos por ID de autor
+    void deleteByAutor_Id(Long autorId);
 }

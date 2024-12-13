@@ -35,8 +35,8 @@ public class TopicoService {
         validarTopicoDuplicado(requestDTO);
 
         // Buscar usuario y curso
-        Usuario autor = usuarioRepository.findByNombre(requestDTO.autor())
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + requestDTO.autor()));
+        Usuario autor = usuarioRepository.findById(requestDTO.autorId())
+            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + requestDTO.autorId()));
 
         Curso curso = cursoRepository.findByNombre(requestDTO.curso())
             .orElseThrow(() -> new IllegalArgumentException("Curso no encontrado: " + requestDTO.curso()));
@@ -60,8 +60,8 @@ public class TopicoService {
         if (requestDTO.mensaje() == null || requestDTO.mensaje().trim().isEmpty()) {
             throw new IllegalArgumentException("El mensaje es obligatorio");
         }
-        if (requestDTO.autor() == null || requestDTO.autor().trim().isEmpty()) {
-            throw new IllegalArgumentException("El autor es obligatorio");
+        if (requestDTO.autorId() == null) {
+            throw new IllegalArgumentException("El ID del autor es obligatorio");
         }
         if (requestDTO.curso() == null || requestDTO.curso().trim().isEmpty()) {
             throw new IllegalArgumentException("El curso es obligatorio");

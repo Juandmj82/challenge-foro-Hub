@@ -37,13 +37,12 @@ public class TopicoController {
     @GetMapping
     public ResponseEntity<Page<TopicoResponseDTO>> listarTopicos(
         @PageableDefault(size = 10, sort = "fechaCreacion", direction = Sort.Direction.ASC) Pageable paginacion,
-        @RequestParam(required = false) String curso,
-        @RequestParam(required = false) Integer año
+        @RequestParam(required = false) String curso
     ) {
         Page<TopicoResponseDTO> topicos;
 
-        if (curso != null && año != null) {
-            topicos = topicoRepository.findByCursoAndYear(curso, año, paginacion)
+        if (curso != null) {
+            topicos = topicoRepository.findByCurso(curso, paginacion)
                 .map(TopicoResponseDTO::new);
         } else {
             topicos = topicoRepository.findAll(paginacion)
@@ -92,8 +91,8 @@ public class TopicoController {
         Curso curso = cursoRepository.findByNombre(datosTopico.curso())
             .orElseThrow(() -> new IllegalArgumentException("Curso no encontrado"));
         
-        // Buscar el autor por nombre
-        Usuario autor = usuarioRepository.findByNombre(datosTopico.autor())
+        // Buscar el autor por ID
+        Usuario autor = usuarioRepository.findById(datosTopico.autorId())
             .orElseThrow(() -> new IllegalArgumentException("Autor no encontrado"));
         
         // Crear nuevo tópico
