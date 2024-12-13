@@ -43,5 +43,3 @@ Todos los endpoints excepto `/login` requieren un token JWT válido en el header
 ## Contribuciones
 Las contribuciones son bienvenidas. Por favor, abre un issue o realiza un pull request.
 
-## Licencia
-[Especificar la licencia]
